@@ -7,10 +7,12 @@ interface VideoAnalysis {
   summary?: string;
   setting?: string;
   mood?: string;
+  emotions?: string;
   people?: string;
   topic?: string;
-  viralSuggestions?: string;
-  keyMoments?: { timestamp: string; description: string }[];
+  tweetSuggestion?: string;
+  titleSuggestions?: string;
+  keyMoments?: Array<{timestamp: string, description: string}>;
   error?: string;
   rawText?: string;
 }

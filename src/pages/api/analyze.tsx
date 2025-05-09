@@ -3,19 +3,21 @@ import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-interface VideoAnalysisResult {
+interface VideoAnalysis {
   summary?: string;
   setting?: string;
   mood?: string;
+  emotions?: string;
   people?: string;
   topic?: string;
-  viralSuggestions?: string;
+  tweetSuggestion?: string;
+  titleSuggestions?: string;
   keyMoments?: Array<{timestamp: string, description: string}>;
   error?: string;
   rawText?: string;
 }
 
-async function geminiSummary(base64Video: string): Promise<VideoAnalysisResult> {
+async function geminiSummary(base64Video: string): Promise<VideoAnalysis> {
   const contents = [
     {
       inlineData: {
@@ -29,9 +31,11 @@ async function geminiSummary(base64Video: string): Promise<VideoAnalysisResult> 
         "summary": "Brief overall summary of the video",
         "setting": "Description of the location and environment",
         "mood": "The emotional tone of the video",
+        "emotions": "Use visual + audio cues to detect sentiments/emotions in the video (excited, casual, frustrated, etc.), add a new line in between each emotion",
         "people": "Description of people involved and what they're doing",
         "topic": "Main subject or conversation topic",
-        "viralSuggestions": "Suggest a possible viral tweet or caption for the video",
+        "tweetSuggestion": "Suggest a possible viral tweet for the video",
+        "titleSuggestions": Suggest multiple titles in the style of YouTube/TikTok hooks, add a new line between each title",
         "keyMoments": [
           {"timestamp": "approximate time (e.g., 0:05)", "description": "what happens at this moment"}
         ]
@@ -59,7 +63,6 @@ async function geminiSummary(base64Video: string): Promise<VideoAnalysisResult> 
   }
 }
 
-// Update the handler to use async/await
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

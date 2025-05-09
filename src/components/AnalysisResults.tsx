@@ -5,10 +5,12 @@ interface VideoAnalysis {
   summary?: string;
   setting?: string;
   mood?: string;
+  emotions?: string;
   people?: string;
   topic?: string;
-  viralSuggestions?: string;
-  keyMoments?: { timestamp: string; description: string }[];
+  tweetSuggestion?: string;
+  titleSuggestions?: string;
+  keyMoments?: Array<{timestamp: string, description: string}>;
   error?: string;
   rawText?: string;
 }
@@ -44,6 +46,19 @@ const AnalysisResults: FC<AnalysisResultsProps> = ({ result }) => {
           content={<p>{result.mood}</p>} 
         />
       )}
+
+      {result.emotions && (
+        <AnalysisSection 
+          title="Emotions" 
+          content={
+            <ul className="list-disc pl-5">
+              {result.emotions.split('\n').map((title, index) => (
+                <li key={index} className="mb-2">{title}</li>
+              ))}
+            </ul>
+          }
+        />
+      )}
       
       {result.people && (
         <AnalysisSection 
@@ -59,10 +74,23 @@ const AnalysisResults: FC<AnalysisResultsProps> = ({ result }) => {
         />
       )}
       
-      {result.viralSuggestions && (
+      {result.tweetSuggestion && (
         <AnalysisSection 
-          title="Viral Suggestions" 
-          content={<p>{result.viralSuggestions}</p>}
+          title="Tweet Suggestion" 
+          content={<p>{result.tweetSuggestion}</p>}
+        />
+      )}
+
+      {result.titleSuggestions && (
+        <AnalysisSection 
+          title="Title Suggestions" 
+          content={
+            <ul className="list-disc pl-5">
+              {result.titleSuggestions.split('\n').map((title, index) => (
+                <li key={index} className="mb-2">{title}</li>
+              ))}
+            </ul>
+          }
         />
       )}
       
