@@ -32,6 +32,20 @@ export default function Home() {
     setLoading(false);
   };
 
+  const downloadResults = () => {
+    if (!result) return;
+    
+    const dataStr = JSON.stringify(result, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = 'video-analysis.json';
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-8">
       <div className="text-center max-w-4xl mx-auto w-full">
@@ -55,6 +69,15 @@ export default function Home() {
         
         {result && (
           <div className="mt-6 text-left p-6 rounded-lg shadow-md mx-auto overflow-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Analysis Results</h2>
+              <button
+                onClick={downloadResults}
+                className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 text-sm"
+              >
+                Download JSON
+              </button>
+            </div>
             <VideoAnalysisResults result={result} />
           </div>
         )}
