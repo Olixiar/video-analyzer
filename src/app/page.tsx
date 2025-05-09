@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import VideoAnalysisResults from '@/components/AnalysisResults';
+import LanguageMenu, { Language, languages } from '@/components/LanguageMenu';
+import { translateAnalysis } from '@/utils/translateAnalysis';
 
 interface VideoAnalysis {
   summary?: string;
@@ -20,14 +22,33 @@ interface VideoAnalysis {
 export default function Home() {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const [translating, setTranslating] = useState(false);
   const [result, setResult] = useState<VideoAnalysis | null>(null);
+  const [originalResult, setOriginalResult] = useState<VideoAnalysis | null>(null);
   const [videoPreview, setVideoPreview] = useState(false);
   const [validUrl, setValidUrl] = useState(false);
+  const [language, setLanguage] = useState<Language>(languages[0]); // Default to English
 
   useEffect(() => {
     const isVideoUrl = /\.(mp4|mov|avi|webm)$|youtube\.com\/|youtu\.be\/|vimeo\.com\//.test(url);
     setValidUrl(isVideoUrl);
   }, [url]);
+
+  // Added effect to translate results when language changes
+  useEffect(() => {
+    const translateResults = async () => {
+      if (originalResult && language.code !== 'en') {
+        setTranslating(true);
+        const translatedResult = await translateAnalysis(originalResult, language);
+        setResult(translatedResult);
+        setTranslating(false);
+      } else if (originalResult) {
+        setResult(originalResult);
+      }
+    };
+
+    translateResults();
+  }, [language, originalResult]);
 
   const submit = async () => {
     if (!validUrl) return;
@@ -38,8 +59,23 @@ export default function Home() {
       body: JSON.stringify({ url }),
     });
     const data = await res.json();
-    setResult(data);
+    setOriginalResult(data);
+    
+    // If language is not English, translate the result
+    if (language.code !== 'en') {
+      setTranslating(true);
+      const translatedResult = await translateAnalysis(data, language);
+      setResult(translatedResult);
+      setTranslating(false);
+    } else {
+      setResult(data);
+    }
+    
     setLoading(false);
+  };
+
+  const handleLanguageChange = async (newLanguage: Language) => {
+    setLanguage(newLanguage);
   };
 
   const downloadResults = () => {
@@ -57,6 +93,7 @@ export default function Home() {
   };
 
   const getEmbedUrl = (url: string) => {
+    // ...existing code...
     if (url.includes('youtube.com') || url.includes('youtu.be')) {
       let videoId = '';
       if (url.includes('youtube.com/watch')) {
@@ -76,6 +113,7 @@ export default function Home() {
   };
 
   const renderVideoPreview = () => {
+    // ...existing code...
     if (!validUrl || !videoPreview) return null;
     
     if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')) {
@@ -113,7 +151,10 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col items-center p-8">
       <div className="text-center max-w-4xl mx-auto w-full">
-        <h1 className="text-2xl font-bold mb-4">Video URL Analyzer</h1>
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold">Video URL Analyzer</h1>
+          <LanguageMenu onLanguageChange={handleLanguageChange} currentLanguage={language} />
+        </div>
         <div className="flex flex-col md:flex-row gap-2 mb-4">
           <input
             className="p-2 border border-gray-300 rounded flex-grow"
@@ -151,6 +192,7 @@ export default function Home() {
         {renderVideoPreview()}
         
         {loading && <p className="mt-4">Analyzing video...</p>}
+        {translating && <p className="mt-4">Translating content...</p>}
         
         {result && (
           <div className="mt-6 text-left p-6 rounded-lg shadow-md mx-auto overflow-auto">
