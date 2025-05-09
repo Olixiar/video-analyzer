@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import VideoAnalysisResults from '@/components/AnalysisResults';
 import LanguageMenu, { Language, languages } from '@/components/LanguageMenu';
 import { translateAnalysis } from '@/utils/translateAnalysis';
+import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface VideoAnalysis {
   summary?: string;
@@ -157,7 +158,7 @@ export default function Home() {
         </div>
         <div className="flex flex-col md:flex-row gap-2 mb-4">
           <input
-            className="p-2 border border-gray-300 rounded flex-grow"
+            className="p-2 border border-gray-300 rounded flex-grow bg-gray-800 text-white"
             type="text"
             placeholder="Enter video URL"
             value={url}
@@ -191,11 +192,15 @@ export default function Home() {
         
         {renderVideoPreview()}
         
-        {loading && <p className="mt-4">Analyzing video...</p>}
-        {translating && <p className="mt-4">Translating content...</p>}
+        {(loading || translating) && (
+          <div className="mt-4 flex flex-col items-center gap-2">
+            <LoadingSpinner />
+            <p>{loading ? "Analyzing video..." : "Translating content..."}</p>
+          </div>
+        )}
         
         {result && (
-          <div className="mt-6 text-left p-6 rounded-lg shadow-md mx-auto overflow-auto">
+          <div className="mt-6 text-left p-6 rounded-lg shadow-md mx-auto overflow-auto bg-gray-800">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">Analysis Results</h2>
               <button
