@@ -51,7 +51,7 @@ export default async function handler(
     for (const field of textFields) {
       if (result[field]) {
         const translatedText = await translateText(result[field] as string, targetLanguage, apiKey);
-        result[field] = translatedText;
+        result[field] = translatedText as any;
       }
     }
     

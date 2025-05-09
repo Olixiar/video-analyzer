@@ -18,7 +18,6 @@ export async function translateAnalysis(
   analysis: VideoAnalysis, 
   targetLanguage: Language
 ): Promise<VideoAnalysis> {
-  // No need to translate if language is English
   if (targetLanguage.code === 'en') {
     return analysis;
   }

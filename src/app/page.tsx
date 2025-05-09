@@ -62,7 +62,6 @@ export default function Home() {
     const data = await res.json();
     setOriginalResult(data);
     
-    // If language is not English, translate the result
     if (language.code !== 'en') {
       setTranslating(true);
       const translatedResult = await translateAnalysis(data, language);
@@ -94,7 +93,6 @@ export default function Home() {
   };
 
   const getEmbedUrl = (url: string) => {
-    // ...existing code...
     if (url.includes('youtube.com') || url.includes('youtu.be')) {
       let videoId = '';
       if (url.includes('youtube.com/watch')) {
@@ -114,7 +112,6 @@ export default function Home() {
   };
 
   const renderVideoPreview = () => {
-    // ...existing code...
     if (!validUrl || !videoPreview) return null;
     
     if (url.includes('youtube.com') || url.includes('youtu.be') || url.includes('vimeo.com')) {
